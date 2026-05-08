@@ -1,0 +1,606 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Games</title>
+    <style>
+      /* ---------- RESET & GLOBAL ---------- */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background-color: #e5e5e5; /* soft gray background for overall page, matches wireframe feel */
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          "Helvetica Neue",
+          sans-serif;
+        color: #1e1e1e;
+        line-height: 1.3;
+      }
+
+      /* main container: max-width 1280px, keeps design exactly centered */
+      .app {
+        max-width: 1280px;
+        margin: 0 auto;
+        background-color: #fffeed; /* white content area base */
+        box-shadow:
+          0 0 0 1px rgba(0, 0, 0, 0.05),
+          0 2px 10px rgba(0, 0, 0, 0.05);
+      }
+
+      /* ----- TYPOGRAPHY & GRAYSCALE (all neutral) ----- */
+      h1,
+      h2,
+      h3,
+      p,
+      .nav-link,
+      .logo,
+      .menu-icon,
+      .section-title {
+        color: #2c2c2c;
+      }
+
+      .section-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        letter-spacing: -0.2px;
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.25rem;
+        border-bottom: 2px solid gray;
+        display: inline-block;
+      }
+
+      /* ----- HEADER / TOP BAR (logo + nav + hamburger) ----- */
+      .site-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.2rem 1.5rem;
+        border-bottom: 1px solid #e0e0e0;
+        background: #77c8fe;
+        flex-wrap: wrap;
+      }
+
+      .logo-area {
+        display: flex;
+        align-items: baseline;
+        gap: 4px;
+      }
+      .logo-icon {
+        font-size: 1.6rem;
+        font-weight: 700;
+        background: #77c8fe;
+        width: 38px;
+        height: 38px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        color: #3a3a3a;
+      }
+      .logo-text {
+        font-size: 1.5rem;
+        font-weight: 600;
+        letter-spacing: -0.3px;
+        color: #ffec00
+      }
+
+      /* desktop navigation (hidden on mobile, becomes flex on larger) */
+      .nav-links {
+        display: none;
+        gap: 1.8rem;
+        list-style: none;
+      }
+      .nav-links li a {
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 1rem;
+        color: #2c2c2c;
+        padding: 0.25rem 0;
+        border-bottom: 2px solid transparent;
+        transition: border-color 0.1s;
+      }
+      .nav-links li a:hover {
+        border-bottom-color: #9e9e9e;
+      }
+
+      /* search highlight (search text inside nav) */
+      .search-item {
+        background-color: #5cb7f3;
+        padding: 0.3rem 0.9rem;
+        border-radius: 30px;
+        font-weight: 500;
+      }
+
+      /* Hamburger button (mobile first) */
+      .hamburger {
+        background: transparent;
+        border: 1px solid #cfcfcf;
+        border-radius: 10px;
+        padding: 0.5rem 0.75rem;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        width: 44px;
+        background-color: #5cb7f3;
+      }
+      .hamburger span {
+        display: block;
+        width: 24px;
+        height: 2px;
+        background-color: #2b2b2b;
+        border-radius: 2px;
+        transition: 0.2s;
+      }
+
+      /* mobile menu (hidden by default, shown via JS toggle) */
+      .mobile-menu {
+        background: #77c8fe;
+        border-top: 1px solid #ffec00;
+        border-bottom: 1px solid #ffec00;
+        padding: 1rem 1.5rem;
+        display: none;
+        flex-direction: column;
+        gap: 1rem;
+        list-style: none;
+      }
+      .mobile-menu.open {
+        display: flex;
+      }
+      .mobile-menu li a {
+        text-decoration: none;
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: #2c2c2c;
+        display: block;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #ffec00;
+      }
+      .mobile-menu li:last-child a {
+        border-bottom: none;
+      }
+
+      /* ----- MAIN CONTENT (padding for spacing) ----- */
+      .main-content {
+        padding: 1.5rem 1.5rem 2rem 1.5rem;
+      }
+
+      /* ----- HOT TODAY + TOP GAMES ROW (flex layout, identical to wireframe) ----- */
+      .featured-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.8rem;
+        margin-bottom: 3rem;
+      }
+
+      /* left block: Hot Today (large placeholder) */
+      .hot-today-block {
+        flex: 2;
+        min-width: 240px;
+      }
+      .large-placeholder {
+        background-image: url(img/puzzle/block-puzzle.avif);
+        background-size: 100% 100%;
+        width: 100%;
+        aspect-ratio: 16 / 9; /* proportion similar to wireframe large area */
+        border-radius: 12px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        /* placeholder image simulation: pure gray box */
+      }
+
+      /* right block: Top Games with 6 smaller placeholders (two rows, three columns) */
+      .top-games-block {
+        flex: 1.6;
+        min-width: 260px;
+      }
+      .small-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+      }
+      .small-placeholder,
+      .small-placeholder2,
+      .small-placeholder3,
+      .small-placeholder4,
+      .small-placeholder5,
+      .small-placeholder6 {
+        background-size: 100% 100%;
+        background-color: #cecece;
+        aspect-ratio: 1 / 1;
+        border-radius: 12px;
+        transition: 0.1s ease;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      }
+      /* subtle difference to match "six smaller placeholders" */
+      .small-placeholder {
+        background-image: url(img/cooking/papas-freezeria.png);
+      }
+      .small-placeholder2 {
+        background-image: url(img/puzzle/blox.png);
+      }
+      .small-placeholder3 {
+        background-image: url(img/cooking/sarakungpao.jpg);
+      }
+      .small-placeholder4 {
+        background-image: url(img/cooking/PapasWingeria.jpg);
+      }
+      .small-placeholder5 {
+        background-image: url(img/skill/Run3.jpg);
+      }
+      .small-placeholder6 {
+        background-image: url(img/beauty/portrait-maker.png);
+      }
+
+      /* ----- ALL GAMES SECTION (grid 7x7) ----- */
+      .all-games-section {
+        margin-top: 1rem;
+      }
+      .games-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 0.8rem;
+        margin-top: 1.25rem;
+      }
+      .game-card1,
+      .game-card2,
+      .game-card3,
+      .game-card4,
+      .game-card5,
+      .game-card6,
+      .game-card7,
+      .game-card8,
+      .game-card9,
+      .game-card10,
+      .game-card11,
+      .game-card12,
+      .game-card13,
+      .game-card14,
+      .game-card15,
+      .game-card16,
+      .game-card17,
+      .game-card18,
+      .game-card19,
+      .game-card20,
+      .game-card21 {
+        background-size: 100% 100%;
+        background-color: #d1d1d1;
+        aspect-ratio: 1 / 1;
+        border-radius: 10px;
+        transition: all 0.05s linear;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      }
+      /* ensure exactly 7 columns on desktop, and responsive adaptation */
+      .game-card1 {
+        background-image: url(img/puzzle/thief-puzzle.avif);
+      }
+      .game-card2 {
+        background-image: url(img/puzzle/block-puzzle.avif);
+      }
+      .game-card3 {
+        background-image: url(img/funny/smash-karts.avif);
+      }
+      .game-card4 {
+        background-image: url(img/dress_up/doll-livestream.jpg);
+      }
+      .game-card5 {
+        background-image: url(img/cooking/papas-bakeria.png);
+      }
+      .game-card6 {
+        background-image: url(img/beauty/ellie-morning.jpg);
+      }
+      .game-card7 {
+        background-image: url(img/dress_up/baby-hazel.png);
+      }
+      .game-card8 {
+        background-image: url(img/funny/love.jpg);
+      }
+      .game-card9 {
+        background-image: url(img/skill/fireboy_and_watergirl.jpeg);
+      }
+      .game-card10 {
+        background-image: url(img/puzzle/the-impossible-quiz.avif);
+      }
+      .game-card11 {
+        background-image: url(img/beauty/nail-arf.jpg);
+      }
+      .game-card12 {
+        background-image: url(img/skill/ducklife.jpg);
+      }
+      .game-card13 {
+        background-image: url(img/funny/blob.jpg);
+      }
+      .game-card14 {
+        background-image: url(img/dress_up/dotted-girl.jpg);
+      }
+      .game-card15 {
+        background-image: url(img/cooking/saras-browine.jpg);
+      }
+      .game-card16 {
+        background-image: url(img/puzzle/doodle-road.avif);
+      }
+      .game-card17 {
+        background-image: url(img/cooking/saras-cooking-class-gingerbread-house.jpg);
+      }
+      .game-card18 {
+        background-image: url(img/skill/worldshardest.jpg);
+      }
+      .game-card19 {
+        background-image: url(img/beauty/ice-princess.jpg);
+      }
+      .game-card20 {
+        background-image: url(img/funny/basket.png);
+      }
+      .game-card21 {
+        background-image: url(img/dress_up/Dress-up-schmess.png);
+      }
+
+      /* ---- RESPONSIVE (mobile-first adjustments) ---- */
+      @media (min-width: 768px) {
+        .hamburger {
+          display: none;
+        }
+        .nav-links {
+          display: flex;
+        }
+        .mobile-menu {
+          display: none !important; /* no mobile menu visible on desktop */
+        }
+      }
+
+      /* For medium screens: adjust all games grid to be responsive but maintain 7x7 structure */
+      @media (max-width: 900px) {
+        .games-grid {
+          gap: 0.6rem;
+        }
+      }
+      /* On smaller tablets, still show 7 columns but columns shrink naturally */
+      @media (max-width: 700px) {
+        .games-grid {
+          gap: 0.4rem;
+        }
+        .section-title {
+          font-size: 1.3rem;
+        }
+      }
+      /* On mobile screens ( < 560px ) we keep 7 columns but smaller squares, also featured row stacks */
+      @media (max-width: 640px) {
+        .featured-row {
+          flex-direction: column;
+        }
+        .hot-today-block,
+        .top-games-block {
+          width: 100%;
+        }
+        .small-grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+        .games-grid {
+          grid-template-columns: repeat(7, 1fr);
+          gap: 0.3rem;
+        }
+        .main-content {
+          padding: 1rem;
+        }
+        .site-header {
+          padding: 0.9rem 1rem;
+        }
+      }
+      /* Extra small: still 7 columns but ensures each card is visible */
+      @media (max-width: 480px) {
+        .games-grid {
+          gap: 0.25rem;
+        }
+      }
+
+      /* Additional fine-tuning: keep all placeholders plain gray, no icons or pseudo content */
+      .large-placeholder,
+      .small-placeholder,
+      .game-card {
+        background-color: #c4c4c4;
+      }
+      /* slight variation to differentiate but still grayscale consistent with wireframe */
+      .large-placeholder {
+        background-color: #8b6f6f;
+      }
+      .small-placeholder {
+        background-color: #c2c2c2;
+      }
+      .game-card {
+        background-color: #bebebe;
+      }
+
+      /* subtle hover (optional but not functional, just grayscale-friendly) */
+      .large-placeholder:hover,
+      .small-placeholder:hover,
+      .game-card:hover {
+        background-color: #b3b3b3;
+        transition: 0.05s;
+      }
+
+      /* remove any distracting outlines */
+      a,
+      button {
+        outline: none;
+      }
+      button {
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <!-- Header with logo, navigation and hamburger (mobile-first) -->
+      <header class="site-header">
+        <div class="logo-area">
+          <span class="logo-icon">🙂</span>
+          <span class="logo-text">SmileGames</span>
+        </div>
+
+        <!-- Desktop navigation (visible >=768px) -->
+        <ul class="nav-links">
+          <li><a href="#">Cooking</a></li>
+          <li><a href="#">Beauty</a></li>
+          <li><a href="#">Dress Up</a></li>
+          <li><a href="#">Skill</a></li>
+          <li><a href="#">Puzzle</a></li>
+          <li><a href="#">Funny</a></li>
+          <li><a href="#" class="search-item">search 🔍</a></li>
+        </ul>
+
+        <!-- Hamburger button (mobile) -->
+        <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </header>
+
+      <!-- Mobile dropdown menu (hidden by default) -->
+      <ul class="mobile-menu" id="mobileMenu">
+        <li><a href="#">Cooking</a></li>
+        <li><a href="#">Beauty</a></li>
+        <li><a href="#">Dress Up</a></li>
+        <li><a href="#">Skill</a></li>
+        <li><a href="#">Puzzle</a></li>
+        <li><a href="#">Funny</a></li>
+        <li><a href="#">search</a></li>
+      </ul>
+
+      <!-- main content area: matches wireframe layout exactly -->
+      <div class="main-content">
+        <!-- Row: Hot Today (large placeholder) + Top Games (six small placeholders) -->
+        <div class="featured-row">
+          <!-- left: Hot Today section -->
+          <div class="hot-today-block">
+            <h2 class="section-title">Hot Today</h2>
+            <div class="large-placeholder"></div>
+            <!-- description note: placeholder sized accordingly (16:9 style) -->
+          </div>
+
+          <!-- right: Top Games section: six smaller placeholders (2 rows of 3) -->
+          <div class="top-games-block">
+            <h2 class="section-title">Top Games</h2>
+            <div class="small-grid">
+              <div class="small-placeholder"></div>
+              <div class="small-placeholder2"></div>
+              <div class="small-placeholder3"></div>
+              <div class="small-placeholder4"></div>
+              <div class="small-placeholder5"></div>
+              <div class="small-placeholder6"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- All Games section with grid 7x7 (49 plain gray boxes) -->
+        <div class="all-games-section">
+          <h2 class="section-title">All Games</h2>
+          <div class="games-grid" id="allGamesGrid">
+            <!-- 7x7 = 49 placeholders - dynamically generated via simple loop but pure static, yet we can generate with simple JS just for placeholder count? 
+                     To keep maintainability I will generate the 49 boxes using repeat but inside final answer static HTML. 
+                     I'll generate them server-side in this code snippet. 
+                -->
+            <!-- static 7x7 grid: exactly 49 game-card items -->
+            <!-- row 1 -->
+            <div class="game-card1"></div>
+            <div class="game-card2"></div>
+            <div class="game-card3"></div>
+            <div class="game-card4"></div>
+            <div class="game-card5"></div>
+            <div class="game-card6"></div>
+            <div class="game-card7"></div>
+            <!-- row 2 -->
+            <div class="game-card8"></div>
+            <div class="game-card9"></div>
+            <div class="game-card10"></div>
+            <div class="game-card11"></div>
+            <div class="game-card12"></div>
+            <div class="game-card13"></div>
+            <div class="game-card14"></div>
+            <!-- row 3 -->
+            <div class="game-card15"></div>
+            <div class="game-card16"></div>
+            <div class="game-card17"></div>
+            <div class="game-card18"></div>
+            <div class="game-card19"></div>
+            <div class="game-card20"></div>
+            <div class="game-card21"></div>
+            <!-- row 4 -->
+            <div class="game-card1"></div>
+            <div class="game-card2"></div>
+            <div class="game-card3"></div>
+            <div class="game-card4"></div>
+            <div class="game-card5"></div>
+            <div class="game-card6"></div>
+            <div class="game-card7"></div>
+            <!-- row 5 -->
+            <div class="game-card8"></div>
+            <div class="game-card9"></div>
+            <div class="game-card10"></div>
+            <div class="game-card11"></div>
+            <div class="game-card12"></div>
+            <div class="game-card13"></div>
+            <div class="game-card14"></div>
+            <!-- row 6 -->
+            <div class="game-card15"></div>
+            <div class="game-card16"></div>
+            <div class="game-card17"></div>
+            <div class="game-card18"></div>
+            <div class="game-card19"></div>
+            <div class="game-card20"></div>
+            <div class="game-card21"></div>
+            <!-- row 7 -->
+            <div class="game-card1"></div>
+            <div class="game-card2"></div>
+            <div class="game-card3"></div>
+            <div class="game-card4"></div>
+            <div class="game-card5"></div>
+            <div class="game-card6"></div>
+            <div class="game-card7"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Very light vanilla JS only for hamburger menu toggle (no placeholder or game content) -->
+    <script>
+      (function () {
+        // hamburger menu toggle - purely for responsive navigation, does not affect placeholders or content
+        const hamburger = document.getElementById("hamburgerBtn");
+        const mobileMenu = document.getElementById("mobileMenu");
+
+        if (hamburger && mobileMenu) {
+          hamburger.addEventListener("click", function (e) {
+            e.preventDefault();
+            mobileMenu.classList.toggle("open");
+            // optional: change hamburger style to indicate open (simple, but we keep minimal)
+            // no extra functionality beyond menu toggle.
+          });
+        }
+      })();
+    </script>
+
+    <!-- 
+    COMPLETE TEMPLATE NOTES:
+        * Top bar with logo, navigation (Cooking, Beauty, Dress Up, Skill, Puzzle, Funny, search)
+        * "Hot Today" section: large placeholder (gray box) with aspect ratio
+        * Right side "Top Games": exactly six smaller placeholders (grid 3x2)
+        * Next row: "All Games" with grid 7x7 = 49 plain gray boxes.
+    - Grayscale only: all backgrounds, text, borders in black/white/gray tones.
+    - No external images used, only divs with background:gray variations.
+    - Fully responsive: mobile-first hamburger menu (pure CSS+JS toggle), no additional functionality.
+    - Content area max-width: 1280px, automatically centered.
+    - CSS grid ensures 7x7 persists across all devices; on smaller screens columns remain 7 but shrink gracefully.
+    - No javascript used for placeholders or image generation. All placeholders are plain div elements.
+    - Easy to edit: each section clearly defined, classes are semantic.
+    - Comments for each section available within HTML/CSS.
+-->
+  </body>
+</html>
